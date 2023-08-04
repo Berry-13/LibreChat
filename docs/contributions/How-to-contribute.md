@@ -22,11 +22,15 @@ Let's say I want to add another page for an API Panel.
 
 1. Open GitHub and select Danny's fork.
 2. First, make sure that the main branch is clean with no commits and up to date.
+3. 
    ![image](https://github.com/Berry-13/LibreChat/assets/81851188/4d627ee7-0f59-458f-8723-4f0eae447dd9)
-3. Open "View all my branches" and create a new branch with a descriptive name for your task. For example: "ApiPanel."
-4. In GitHub Desktop, select the branch you just created.
+   
+5. Open "View all my branches" and create a new branch with a descriptive name for your task. For example: "ApiPanel."
+6. In GitHub Desktop, select the branch you just created.
+7. 
    ![image](https://github.com/Berry-13/LibreChat/assets/81851188/dd4374b8-419a-4406-97a3-999ba4118397)
-5. Start modifying the code, and when you finish a part, commit the changes.
+   
+9. Start modifying the code, and when you finish a part, commit the changes.
 
 While testing the code, if you're working with the frontend, it might be frustrating to run `npm run frontend` and `npm run backend` every time. Instead, use `npm run frontend:dev` to see real-time changes on port 3090 (really!).
 
