@@ -57,7 +57,12 @@ If you have the main branch with many commits and don't know what to do, follow 
 
 ⚠️ Please do this only when you have no active PRs or when you're not working on the project. ⚠️
 
-1. Do a pull origin and in the terminal write `git log` to identify how many commits you are behind.
-2. Use `git rebase -i HEAD~2`, where 2 represents the number of commits you need to go back. If you need to go back 100 commits, use `git rebase -i HEAD~100`.
-3. In the editor, change the "pick" for the two commits to "drop," save with "esc," then type `:wq` and press "Enter."
-4. Finally, run `git push --force origin main`.
+1. Go to GitHub and open "View all my branches"
+2. Create a new branch, select Danny's repository as the source, and name it "clean"
+3. Change the default branch to "clean"
+
+![image](https://github.com/Berry-13/LibreChat/assets/81851188/0ac0f847-674c-4506-8fba-b02aaefa39f3)
+
+![image](https://github.com/Berry-13/LibreChat/assets/81851188/d739610d-66c3-4d26-a1ea-ae1244af326a)
+
+4. Delete the "main" branch and rename the "clean" branch to "main"
