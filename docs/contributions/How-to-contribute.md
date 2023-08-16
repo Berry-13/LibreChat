@@ -4,7 +4,8 @@
 
 1. [Git](https://git-scm.com/downloads) is essential, the first thing to download.
 2. [Git LFS](https://git-lfs.com/) can be useful for uploading files with larger sizes.
-3. [Github Desktop](https://desktop.github.com/) - I use it only for UI; I don't recommend using it for pushing or other actions.
+3. [Github Desktop](https://desktop.github.com/) I use it only for UI, I don't recommend using it for pushing or other actions.
+4. [VS code](https://code.visualstudio.com/download) is one of the best lightweight editors.
 
 ## How to Use?
 
