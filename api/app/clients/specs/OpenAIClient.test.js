@@ -1,5 +1,7 @@
 const OpenAIClient = require('../OpenAIClient');
 
+jest.mock('meilisearch');
+
 describe('OpenAIClient', () => {
   let client, client2;
   const model = 'gpt-4';
@@ -20,11 +22,14 @@ describe('OpenAIClient', () => {
     };
     client = new OpenAIClient('test-api-key', options);
     client2 = new OpenAIClient('test-api-key', options);
-    client.refineMessages = jest.fn().mockResolvedValue({
+    client.summarizeMessages = jest.fn().mockResolvedValue({
       role: 'assistant',
       content: 'Refined answer',
       tokenCount: 30,
     });
+    client.buildPrompt = jest
+      .fn()
+      .mockResolvedValue({ prompt: messages.map((m) => m.text).join('\n') });
     client.constructor.freeAndResetAllEncoders();
   });
 
@@ -153,7 +158,7 @@ describe('OpenAIClient', () => {
     });
 
     it('should handle context strategy correctly', async () => {
-      client.contextStrategy = 'refine';
+      client.contextStrategy = 'summarize';
       const result = await client.buildMessages(messages, parentMessageId, {
         isChatCompletion: true,
       });
@@ -170,17 +175,6 @@ describe('OpenAIClient', () => {
         (item) => item.role === 'user' && item.name === 'Test User',
       );
       expect(hasUserWithName).toBe(true);
-    });
-
-    it('should calculate tokenCount for each message when contextStrategy is set', async () => {
-      client.contextStrategy = 'refine';
-      const result = await client.buildMessages(messages, parentMessageId, {
-        isChatCompletion: true,
-      });
-      const hasUserWithTokenCount = result.prompt.some(
-        (item) => item.role === 'user' && item.tokenCount > 0,
-      );
-      expect(hasUserWithTokenCount).toBe(true);
     });
 
     it('should handle promptPrefix from options when promptPrefix argument is not provided', async () => {
@@ -206,6 +200,65 @@ describe('OpenAIClient', () => {
         isChatCompletion: true,
       });
       expect(result.prompt).toEqual([]);
+    });
+  });
+
+  describe('getTokenCountForMessage', () => {
+    const example_messages = [
+      {
+        role: 'system',
+        content:
+          'You are a helpful, pattern-following assistant that translates corporate jargon into plain English.',
+      },
+      {
+        role: 'system',
+        name: 'example_user',
+        content: 'New synergies will help drive top-line growth.',
+      },
+      {
+        role: 'system',
+        name: 'example_assistant',
+        content: 'Things working well together will increase revenue.',
+      },
+      {
+        role: 'system',
+        name: 'example_user',
+        content:
+          'Let\'s circle back when we have more bandwidth to touch base on opportunities for increased leverage.',
+      },
+      {
+        role: 'system',
+        name: 'example_assistant',
+        content: 'Let\'s talk later when we\'re less busy about how to do better.',
+      },
+      {
+        role: 'user',
+        content:
+          'This late pivot means we don\'t have time to boil the ocean for the client deliverable.',
+      },
+    ];
+
+    const testCases = [
+      { model: 'gpt-3.5-turbo-0301', expected: 127 },
+      { model: 'gpt-3.5-turbo-0613', expected: 129 },
+      { model: 'gpt-3.5-turbo', expected: 129 },
+      { model: 'gpt-4-0314', expected: 129 },
+      { model: 'gpt-4-0613', expected: 129 },
+      { model: 'gpt-4', expected: 129 },
+      { model: 'unknown', expected: 129 },
+    ];
+
+    testCases.forEach((testCase) => {
+      it(`should return ${testCase.expected} tokens for model ${testCase.model}`, () => {
+        client.modelOptions.model = testCase.model;
+        client.selectTokenizer();
+        // 3 tokens for assistant label
+        let totalTokens = 3;
+        for (let message of example_messages) {
+          totalTokens += client.getTokenCountForMessage(message);
+        }
+        expect(totalTokens).toBe(testCase.expected);
+      });
     });
   });
 });
